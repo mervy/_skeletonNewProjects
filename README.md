@@ -1,6 +1,6 @@
-## Skeleton
+# Skeleton for new projects PHP
 
-* - Diretórios*
+## Directories
 
 ```html
    .env
@@ -24,14 +24,17 @@
                 navbar.php
 ```
 
-* - Exemplos de .htaccess*
+## Examples .htaccess
 
-- Exemplo 01
+- Example 01
+
+Inside in root directory of project
 
 ```apache
 # Enable friendly URLs
+RewriteEngine On
+
 # Redirect requests to the public folder
-RewriteEngine On 
 RewriteRule ^(.*)$ public/$1 [L] 
 
 # Disable directory listing
@@ -42,14 +45,13 @@ Options -Indexes
     Order allow,deny
     Deny from all
 </Files>
-
-
 ```
 
-- Exemplo 02
+- Example 02
+
+Inside the file in public folder
 
 ```apache
-# Inside the public folder
 # Redirect requests to the index.php file
 RewriteEngine On    
 # Check if the requested URL does not point to a directory.
@@ -57,7 +59,6 @@ RewriteCond %{REQUEST_FILENAME} !-d
 # Check if the requested URL does not correspond to an existing file.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [L]
-
 ```
 
 * - Exemplo de .env *
@@ -73,12 +74,14 @@ DB_PASS=password        # Database user's password
 DEBUG=true              # Set to 'true' to enable debugging messages, 'false' to disable
 ```
 
-* - Exemplo conexão PDO*
+## PDO connection example
+
+Install dep for .env files
 ```
 composer require vlucas/phpdotenv
 ```
 
-- Conexão:
+- Connection example
 ```php
 <?php
     // Include the Composer autoloader to load the dotenv package
@@ -109,5 +112,57 @@ composer require vlucas/phpdotenv
         die("Error: " . $e->getMessage());
     }
 ?>
+```
+- Other example
+```php
+class Connection {
+    private static $connection;
+
+    private function __construct() {
+        // Private constructor to prevent external instantiation
+    }
+
+    public static function getConnection() {
+        if (!self::$connection) {
+            $host = $_ENV['DB_HOST'];
+            $dbname = $_ENV['DB_NAME'];
+            $user = $_ENV['DB_USER'];
+            $pass = $_ENV['DB_PASS'];
+
+            try {
+                self::$connection = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+                self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+            } catch (PDOException $e) {
+                die("Error: " . $e->getMessage());
+            }
+        }
+        return self::$// Include the Composer autoloader to load the dotenv package
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+// Load environment variables from the .env file
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();;
+    }
+}
+
+//Use:
+// Include the Composer autoloader to load the dotenv package
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+// Load environment variables from the .env file
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+// Get the PDO connection object
+$pdo = Connection::getConnection();
+
+// You can now use $pdo for database operations
+echo "Connected to the database successfully!";
+
 ```
 
